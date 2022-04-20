@@ -1,5 +1,5 @@
-import React,{ Component} from 'react';
-import{
+import React, { Component } from 'react';
+import {
     Button,
     Modal,
     ModalBody,
@@ -12,47 +12,60 @@ import{
 import { connect } from 'react-redux';
 import { addItem } from '../actions/itemActions';
 // import { v4 as uuidv4 } from 'uuid';
+import PropTypes from 'prop-types';
 
-class ItemModal extends Component{
-    state={
-        modal:false,
-        name:''
+class ItemModal extends Component {
+    state = {
+        modal: false,
+        name: ''
     };
-    toggle=()=>{
+
+    static propTypes = {
+        isAuthenticated: PropTypes.bool
+    };
+
+    toggle = () => {
         this.setState({
-            modal:!this.state.modal
+            modal: !this.state.modal
         });
     };
-    onChangeItem=(e)=>{
-        this.setState({[e.target.name]:e.target.value});
+    onChangeItem = (e) => {
+        this.setState({ [e.target.name]: e.target.value });
     };
-    onSubmit = (e)=>{
+    onSubmit = (e) => {
         e.preventDefault();
-        const newItem ={
-            name:this.state.name
+        const newItem = {
+            name: this.state.name
         };
         // ADD item Action
         this.props.addItem(newItem);
 
         // close modal
         this.toggle();
-    }
-    render(){
-        return(
+    };
+    render() {
+        return (
             <div>
-                <Button
-                    color='dark'
-                    style={{marginBottom:'2rem'}}
-                    onClick={this.toggle}
-                >
-                    Add Item
-                </Button>
+                {
+                    this.props.isAuthenticated ?
+                        <Button
+                            color='dark'
+                            style={{ marginBottom: '2rem' }}
+                            onClick={() => this.toggle()}
+                        >
+                            Add Item
+                        </Button>
+                        :
+                        <h4 className='mb-3 ml-4'>
+                            Please login to manage items
+                        </h4>
+                }
                 <Modal
-                    isOpen ={this.state.modal}
+                    isOpen={this.state.modal}
                     toggle={this.toggle}
                 >
                     <ModalHeader toggle={this.toggle}>
-                       Add To Shopping List 
+                        Add To Shopping List
                     </ModalHeader>
                     <ModalBody>
                         <Form onSubmit={this.onSubmit}>
@@ -65,12 +78,12 @@ class ItemModal extends Component{
                                     name='name'
                                     id='item'
                                     placeholder='Add shopping item'
-                                    onChange={this.onChangeItem} 
+                                    onChange={this.onChangeItem}
                                 />
                                 <Button
                                     color='dark'
                                     block
-                                    style={{marginTop:'2rem'}}
+                                    style={{ marginTop: '2rem' }}
                                 >
                                     Add Item
                                 </Button>
@@ -83,7 +96,8 @@ class ItemModal extends Component{
     }
 };
 
-const mapStateToProps = (state) =>({
-    item:state.item
+const mapStateToProps = (state) => ({
+    item: state.item,
+    isAuthenticated: state.auth.isAuthenticated
 })
-export default connect(mapStateToProps,{addItem})(ItemModal);
+export default connect(mapStateToProps, { addItem })(ItemModal);
